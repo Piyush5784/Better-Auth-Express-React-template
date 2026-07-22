@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id  @default(uuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  sessions Session[]
+  accounts Account[]
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  savedPosts  SavedPost[]
+  media       Media[]
+
+  // Follow: rows where I'm the follower ("following" = people I follow)
+  following Follow[] @relation("followers")
+  // Follow: rows where I'm the target ("followers" = people who follow me)
+  followers Follow[] @relation("following")
+
+  blocking  Block[] @relation("blocker")
+  blockedBy Block[] @relation("blocked")
+
+  notifications     Notification[] @relation("receiver")
+  sentNotifications Notification[] @relation("sender")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id  @default(uuid())
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id          String @id @default(uuid())
+  accountId   String @map("account_id")
+  providerId  String @map("provider_id")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+// ---------------------------------------------------------------------------
+// Social app tables
+// ---------------------------------------------------------------------------
+
+enum FollowStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+  FOLLOW_REQUEST
+  MENTION
+}
+
+model Post {
+  id String @id @default(uuid())
+
+  userId String @map("user_id")
+
+  content String
+
+  likesCount    Int @default(0) @map("likes_count")
+  commentsCount Int @default(0) @map("comments_count")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  likes    Like[]
+  comments Comment[]
+  media    Media[]
+  savedBy  SavedPost[]
+
+  notifications Notification[]
+
+  @@index([userId, createdAt])
+  @@map("posts")
+}
+
+model Comment {
+  id String @id @default(uuid())
+
+  userId String @map("user_id")
+  postId String @map("post_id")
+
+  // self-relation for threaded replies
+  parentId String?   @map("parent_id")
+  parent   Comment?  @relation("replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("replies")
+
+  content String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  userId String @map("user_id")
+  postId String @map("post_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("likes")
+}
+
+model SavedPost {
+  id String @id @default(uuid())
+
+  userId String @map("user_id")
+  postId String @map("post_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("saved_posts")
+}
+
+model Follow {
+  id String @id @default(uuid())
+
+  followerId  String @map("follower_id")
+  followingId String @map("following_id")
+
+  // PENDING for private-account follow requests, ACCEPTED once approved
+  status FollowStatus @default(ACCEPTED)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  follower  User @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+model Block {
+  id String @id @default(uuid())
+
+  blockerId String @map("blocker_id")
+  blockedId String @map("blocked_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blocker User @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  receiverId String @map("receiver_id")
+  // nullable: some notifications (system messages, moderation notices)
+  // have no originating user
+  senderId String? @map("sender_id")
+
+  type NotificationType
+
+  postId String? @map("post_id")
+
+  read Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  receiver User  @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User? @relation("sender", fields: [senderId], references: [id], onDelete: SetNull)
+  post     Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([receiverId, createdAt])
+  @@index([senderId])
+  @@index([postId])
+  @@map("notifications")
+}
+
+model Media {
+  id String @id @default(uuid())
+
+  userId String  @map("user_id")
+  postId String? @map("post_id")
+
+  url  String
+  type String
+
+  // ordering for multi-image/video carousel posts
+  order Int @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([postId, order])
+  @@map("media")
+}
