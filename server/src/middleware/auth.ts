@@ -1,23 +1,23 @@
-import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { JWT_PASSWORD } from "@/config";
-import type { UserPayload } from "@/types/user";
+import { auth } from "../lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 
-export function authenticate(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) {
-    res.status(401).json({ error: "Unauthorized", success: false });
-    return;
-  }
+import type { Request, Response, NextFunction } from "express";
+
+export const AuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    req.user = jwt.verify(token, JWT_PASSWORD) as UserPayload;
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (!session) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    req.user = session.user;
+    req.session = session.session;
+
     next();
-  } catch {
-    res.status(401).json({ error: "Invalid or expired token", success: false });
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
-}
+};

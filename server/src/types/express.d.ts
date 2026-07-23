@@ -1,9 +1,10 @@
-import type { UserPayload } from "./user";
+import type { UserPayload, UserSession } from "./user";
 
 declare global {
   namespace Express {
     interface Request {
       user?: UserPayload;
+      session?: UserSession;
     }
   }
 }

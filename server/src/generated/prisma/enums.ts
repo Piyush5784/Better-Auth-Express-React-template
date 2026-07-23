@@ -9,30 +9,7 @@
 * 🟢 You can import this file directly.
 */
 
-export const AuthProvider = {
-  EMAIL: 'EMAIL',
-  GOOGLE: 'GOOGLE',
-  FACEBOOK: 'FACEBOOK',
-  TWITTER: 'TWITTER'
-} as const
-
-export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
 
 
-export const NotificationType = {
-  LIKE: 'LIKE',
-  COMMENT: 'COMMENT',
-  FOLLOW: 'FOLLOW',
-  FOLLOW_REQUEST: 'FOLLOW_REQUEST',
-  MENTION: 'MENTION'
-} as const
-
-export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
-
-
-export const FollowStatus = {
-  PENDING: 'PENDING',
-  ACCEPTED: 'ACCEPTED'
-} as const
-
-export type FollowStatus = (typeof FollowStatus)[keyof typeof FollowStatus]
+// This file is empty because there are no enums in the schema.
+export {}

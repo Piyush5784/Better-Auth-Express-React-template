@@ -34,11 +34,9 @@ import { PasswordInput } from "@/components/custom/password-input";
 
 import { registerFormSchema } from "@/lib/validation-schemas";
 import { Link } from "@tanstack/react-router";
-import {
-  useRegisterMutation,
-  getGoogleAuthUrl,
-} from "@/routes/auth/register/query";
-import { getApiErrorMessage } from "@/utils/error-formatter";
+import { useRegister } from "@/hooks/use-user";
+import { signIn } from "@/lib/auth-client";
+import { FRONTEND_URL } from "@/config";
 
 const formSchema = registerFormSchema;
 
@@ -57,37 +55,21 @@ export default function RegisterForm({
     },
   });
 
-  const registerMutation = useRegisterMutation();
+  const { mutate, isPending } = useRegister();
 
   async function loginWithGoogle() {
-    window.location.href = getGoogleAuthUrl();
+    await signIn.social({
+      provider: "google",
+      callbackURL:  `${FRONTEND_URL}/dashboard`
+    });
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const res = await registerMutation.mutateAsync({
-        email: values.email,
-        username: values.username,
-        password: values.password,
-      });
-
-      if (res.success) {
-        toast.success("Registration successful", {
-          description: res.message,
-        });
-        form.reset();
-        return;
-      }
-
-      toast.error("Registration failed", {
-        description: res.error ?? "Please try again",
-      });
-    } catch (error) {
-      console.log(error)
-      toast.error("Registration failed", {
-        description: getApiErrorMessage(error),
-      });
-    }
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    mutate({
+      email: values.email,
+      name: values.username,
+      password: values.password,
+    });
   }
 
   return (
@@ -108,7 +90,7 @@ export default function RegisterForm({
                     variant="outline"
                     onClick={loginWithGoogle}
                     type="button"
-                    disabled={registerMutation.isPending}
+                    disabled={isPending}
                   >
                     <FcGoogle />
                     Sign up with Google
@@ -203,12 +185,8 @@ export default function RegisterForm({
                   )}
                 />
                 <Field>
-                  <Button
-                    type="submit"
-                    disabled={registerMutation.isPending}
-                    className="w-full"
-                  >
-                    {registerMutation.isPending ? "Registering..." : "Register"}
+                  <Button type="submit" disabled={isPending} className="w-full">
+                    {isPending ? "Registering..." : "Register"}
                   </Button>
                   <FieldDescription className="text-center">
                     Already have an account?{" "}

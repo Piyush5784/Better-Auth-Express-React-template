@@ -52,16 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  AuthAccount: 'AuthAccount',
   Session: 'Session',
-  Post: 'Post',
-  Comment: 'Comment',
-  Like: 'Like',
-  SavedPost: 'SavedPost',
-  Follow: 'Follow',
-  Block: 'Block',
-  Notification: 'Notification',
-  Media: 'Media'
+  Account: 'Account',
+  Verification: 'Verification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -82,15 +75,10 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   email: 'email',
-  username: 'username',
-  avatar: 'avatar',
-  bio: 'bio',
-  verified: 'verified',
-  isPrivate: 'isPrivate',
-  followersCount: 'followersCount',
-  followingCount: 'followingCount',
-  postsCount: 'postsCount',
+  emailVerified: 'emailVerified',
+  image: 'image',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -98,122 +86,49 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const AuthAccountScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  provider: 'provider',
-  providerAccountId: 'providerAccountId',
-  passwordHash: 'passwordHash',
-  accessToken: 'accessToken',
-  refreshToken: 'refreshToken',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type AuthAccountScalarFieldEnum = (typeof AuthAccountScalarFieldEnum)[keyof typeof AuthAccountScalarFieldEnum]
-
-
 export const SessionScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  tokenHash: 'tokenHash',
   expiresAt: 'expiresAt',
-  createdAt: 'createdAt'
+  token: 'token',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
-export const PostScalarFieldEnum = {
+export const AccountScalarFieldEnum = {
   id: 'id',
+  accountId: 'accountId',
+  providerId: 'providerId',
   userId: 'userId',
-  content: 'content',
-  likesCount: 'likesCount',
-  commentsCount: 'commentsCount',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
 
 
-export const CommentScalarFieldEnum = {
+export const VerificationScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  postId: 'postId',
-  parentId: 'parentId',
-  content: 'content',
-  createdAt: 'createdAt'
+  identifier: 'identifier',
+  value: 'value',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
-
-
-export const LikeScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  postId: 'postId',
-  createdAt: 'createdAt'
-} as const
-
-export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
-
-
-export const SavedPostScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  postId: 'postId',
-  createdAt: 'createdAt'
-} as const
-
-export type SavedPostScalarFieldEnum = (typeof SavedPostScalarFieldEnum)[keyof typeof SavedPostScalarFieldEnum]
-
-
-export const FollowScalarFieldEnum = {
-  id: 'id',
-  followerId: 'followerId',
-  followingId: 'followingId',
-  status: 'status',
-  createdAt: 'createdAt'
-} as const
-
-export type FollowScalarFieldEnum = (typeof FollowScalarFieldEnum)[keyof typeof FollowScalarFieldEnum]
-
-
-export const BlockScalarFieldEnum = {
-  id: 'id',
-  blockerId: 'blockerId',
-  blockedId: 'blockedId',
-  createdAt: 'createdAt'
-} as const
-
-export type BlockScalarFieldEnum = (typeof BlockScalarFieldEnum)[keyof typeof BlockScalarFieldEnum]
-
-
-export const NotificationScalarFieldEnum = {
-  id: 'id',
-  receiverId: 'receiverId',
-  senderId: 'senderId',
-  type: 'type',
-  postId: 'postId',
-  read: 'read',
-  createdAt: 'createdAt'
-} as const
-
-export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
-
-
-export const MediaScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  postId: 'postId',
-  url: 'url',
-  type: 'type',
-  order: 'order',
-  createdAt: 'createdAt'
-} as const
-
-export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
+export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
 export const SortOrder = {

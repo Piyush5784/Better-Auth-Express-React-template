@@ -23,52 +23,17 @@ export * from './enums.ts';
  */
 export type User = Prisma.UserModel
 /**
- * Model AuthAccount
- * 
- */
-export type AuthAccount = Prisma.AuthAccountModel
-/**
  * Model Session
  * 
  */
 export type Session = Prisma.SessionModel
 /**
- * Model Post
+ * Model Account
  * 
  */
-export type Post = Prisma.PostModel
+export type Account = Prisma.AccountModel
 /**
- * Model Comment
+ * Model Verification
  * 
  */
-export type Comment = Prisma.CommentModel
-/**
- * Model Like
- * 
- */
-export type Like = Prisma.LikeModel
-/**
- * Model SavedPost
- * 
- */
-export type SavedPost = Prisma.SavedPostModel
-/**
- * Model Follow
- * 
- */
-export type Follow = Prisma.FollowModel
-/**
- * Model Block
- * 
- */
-export type Block = Prisma.BlockModel
-/**
- * Model Notification
- * 
- */
-export type Notification = Prisma.NotificationModel
-/**
- * Model Media
- * 
- */
-export type Media = Prisma.MediaModel
+export type Verification = Prisma.VerificationModel

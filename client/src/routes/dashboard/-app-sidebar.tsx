@@ -22,6 +22,7 @@ import {
 
 import { Link } from "@tanstack/react-router";
 import { useLogout } from "@/hooks/use-user";
+import { signOut } from "@/lib/auth-client";
 
 const routes = [
   {
@@ -62,7 +63,7 @@ const routes = [
 export function AppSidebar() {
   const user = useLogout();
   const handleLogout = async () => {
-    await user.logout();
+    await signOut();
   };
 
   return (

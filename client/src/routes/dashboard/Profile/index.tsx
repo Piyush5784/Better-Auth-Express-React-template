@@ -19,28 +19,14 @@ export const Route = createFileRoute("/dashboard/Profile/")({
 });
 
 function ProfilePage() {
-  const { user } = useUser();
+  const { data } = useUser();
+  const user = data?.user;
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>No User Data</CardTitle>
-            <CardDescription>
-              Please log in to view your profile
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  const initials = user?.name
+    ? user.name.substring(0, 2).toUpperCase()
+    : user?.email.substring(0, 2).toUpperCase();
 
-  const initials = user.username
-    ? user.username.substring(0, 2).toUpperCase()
-    : user.email.substring(0, 2).toUpperCase();
-
-  const joinDate = user.createdAt
+  const joinDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
@@ -57,18 +43,18 @@ function ProfilePage() {
             <div className="flex justify-center mb-4">
               <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
                 <AvatarImage
-                  src={user.avatar}
-                  alt={user.username || user.email}
+                  src={user?.image || ""}
+                  alt={user?.name || user?.email}
                 />
                 <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
               </Avatar>
             </div>
             <CardTitle className="text-2xl">
-              {user.username || "Anonymous"}
+              {user?.name || "Anonymous"}
             </CardTitle>
             <CardDescription className="flex items-center justify-center gap-2">
               <Mail className="h-4 w-4" />
-              {user.email}
+              {user?.email}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -118,14 +104,14 @@ function ProfilePage() {
                       <span className="text-sm text-muted-foreground">
                         User ID
                       </span>
-                      <span className="text-sm font-mono">{user.id}</span>
+                      <span className="text-sm font-mono">{user?.id}</span>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between py-2">
                       <span className="text-sm text-muted-foreground">
                         Email
                       </span>
-                      <span className="text-sm">{user.email}</span>
+                      <span className="text-sm">{user?.email}</span>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between py-2">
@@ -133,7 +119,7 @@ function ProfilePage() {
                         Username
                       </span>
                       <span className="text-sm">
-                        {user.username || "Not set"}
+                        {user?.name || "Not set"}
                       </span>
                     </div>
                   </div>

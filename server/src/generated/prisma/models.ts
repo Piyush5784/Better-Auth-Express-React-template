@@ -9,14 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.ts'
-export type * from './models/AuthAccount.ts'
 export type * from './models/Session.ts'
-export type * from './models/Post.ts'
-export type * from './models/Comment.ts'
-export type * from './models/Like.ts'
-export type * from './models/SavedPost.ts'
-export type * from './models/Follow.ts'
-export type * from './models/Block.ts'
-export type * from './models/Notification.ts'
-export type * from './models/Media.ts'
+export type * from './models/Account.ts'
+export type * from './models/Verification.ts'
 export type * from './commonInputTypes.ts'

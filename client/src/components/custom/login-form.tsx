@@ -34,8 +34,9 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/custom/password-input";
 import { Link } from "@tanstack/react-router";
 import { useLogin } from "@/hooks/use-user";
-import { getGoogleAuthUrl } from "@/routes/auth/Login/query";
 import { loginFormSchema } from "@/lib/validation-schemas";
+import { signIn } from "@/lib/auth-client";
+import { FRONTEND_URL } from "@/config";
 
 const formSchema = loginFormSchema;
 
@@ -43,7 +44,7 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login, isLoading } = useLogin();
+  const { mutate, isPending } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,13 +54,15 @@ export default function LoginForm({
       password: "",
     },
   });
-
-  async function loginWithGoogle() {
-    window.location.href = getGoogleAuthUrl();
+  async function LoginWithGoogle() {
+    await signIn.social({
+      provider: "google",
+      callbackURL: `${FRONTEND_URL}/dashboard`
+    });
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    await login(values);
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    mutate(values);
   }
 
   return (
@@ -78,9 +81,9 @@ export default function LoginForm({
                 <Field>
                   <Button
                     variant="outline"
-                    onClick={loginWithGoogle}
+                    onClick={LoginWithGoogle}
                     type="button"
-                    disabled={isLoading}
+                    disabled={isPending}
                   >
                     <FcGoogle />
                     Login with Google
