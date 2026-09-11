@@ -34,7 +34,7 @@ A full-stack social media application built with a modern TypeScript stack, feat
 
 ## Project Structure
 
-    Social Media Website/
+    template/
     ├── server/          # Backend API (Express/Node + Better Auth + Prisma)
     │   ├── src/
     │   │   ├── lib/
@@ -92,8 +92,8 @@ A full-stack social media application built with a modern TypeScript stack, feat
 
 ### 1. Clone the repository
 
-    git clone <repo-url>
-    cd "Social Media Website"
+    git clone https://github.com/Piyush5784/Better-Auth-Express-React-template>
+    cd "template"
 
 ### 2. Install dependencies
 
